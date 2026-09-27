@@ -1,27 +1,16 @@
 {
-  "version": 2,
   "functions": {
-    "api/**/*.php": {
+    "api/*.php": {
       "runtime": "vercel-php@0.6.0"
     },
     "*.php": {
-      "runtime": "vercel-php@0.6.0"
-    },
-    "arena/*.php": {
-      "runtime": "vercel-php@0.6.0"
-    },
-    "member/*.php": {
       "runtime": "vercel-php@0.6.0"
     }
   },
   "routes": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/index.php"
     }
   ]
 }
