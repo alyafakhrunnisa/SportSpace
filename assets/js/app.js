@@ -8,22 +8,6 @@ function initNavToggle() {
     });
 }
 
-function initHapusConfirm() {
-    document.addEventListener("click", function (e) {
-        console.log("Elemen yang diklik:", e.target);
-        // Cari apakah yang diklik adalah tombol hapus (atau elemen di dalamnya)
-        const btn = e.target.closest(".btn-hapus-aes");
-        if (!btn) return;
-
-        const row = btn.closest("tr");
-        const nama = row ? row.querySelector("td.fw-bold")?.textContent : "data ini";
-        const yakin = confirm("Yakin ingin menghapus \"" + nama + "\"?");
-        if (yakin && row) {
-            row.remove();
-        }
-    });
-}
-
 function initTableFilter() {
     const input = document.getElementById("search-input");
     const table = document.querySelector(".table-responsive table");
@@ -42,7 +26,6 @@ function initTableFilter() {
 function tampilkanError(input, pesan) {
     hapusError(input);
     const span = document.createElement("span");
-    // Menambahkan class text-danger bawaan Bootstrap untuk warna merah
     span.className = "error text-danger d-block mt-1 small";
     span.textContent = pesan;
     input.insertAdjacentElement("afterend", span);
@@ -89,7 +72,6 @@ function initValidasiForm() {
 
 document.addEventListener("DOMContentLoaded", function () {
     initNavToggle();
-    initHapusConfirm();
     initTableFilter();
     initValidasiForm();
 });

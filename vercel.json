@@ -1,35 +1,13 @@
 {
-  "version": 2,
   "functions": {
-    "api/**/*.php": {
-      "runtime": "vercel-php@0.6.0"
-    },
-    "*.php": {
-      "runtime": "vercel-php@0.6.0"
-    },
-    "arena/*.php": {
-      "runtime": "vercel-php@0.6.0"
-    },
-    "member/*.php": {
-      "runtime": "vercel-php@0.6.0"
+    "**/*.php": {
+      "runtime": "vercel-php@0.6.2"
     }
   },
   "routes": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/arena/(.*)",
-      "dest": "/arena/$1"
-    },
-    {
-      "src": "/member/(.*)",
-      "dest": "/member/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/index.php"
+      "dest": "/$1"
     }
   ]
 }
