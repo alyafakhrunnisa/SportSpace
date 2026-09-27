@@ -1,5 +1,4 @@
 <?php
-// Mengambil kredensial dari Environment Variables Vercel atau fallback ke nilai Neon DB
 $host     = getenv('PGHOST') ?: 'ep-tiny-mode-b3hvl1sj-pooler.c-4.ap-southeast-1.aws.neon.tech';
 $port     = getenv('PGPORT') ?: '5432';
 $dbname   = getenv('PGDATABASE') ?: 'neondb';
