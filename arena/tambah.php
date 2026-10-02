@@ -1,5 +1,13 @@
 <?php
 session_start();
+require __DIR__ . '/../includes/auth.php';
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Akses ditolak! Hanya admin yang bisa mengelola data.'];
+    header('Location: list.php');
+    exit;
+}
+
 $page_title = "Tambah Arena";
 include __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/koneksi.php';
@@ -35,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <main class="container my-5 d-flex justify-content-center">
-    <section class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 600px; width: 100%;"
+    <section class="card border-0 shadow-sm rounded-4 overflow-hidden" style="max-width: 600px; width: 100%;">
         <div class="p-4 text-white text-center" style="background-color: #5a7061;">
             <div class="mb-2">
                 <i class="bi bi-plus-square text-warning" style="font-size: 2rem;"></i>

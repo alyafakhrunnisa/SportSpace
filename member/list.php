@@ -1,11 +1,15 @@
 <?php
 session_start();
+require __DIR__ . '/../includes/auth.php';
 $page_title = "Daftar Member";
 include __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/koneksi.php';
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
+
+// Cek role user yang lagi login (default: petugas)
+$role = $_SESSION['role'] ?? 'petugas';
 
 // Ambil data dari database PostgreSQL
 $daftarMember = $pdo->query("SELECT * FROM member ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
@@ -32,17 +36,24 @@ $daftarMember = $pdo->query("SELECT * FROM member ORDER BY id DESC")->fetchAll(P
                     </div>
                     
                     <div class="d-flex gap-2 flex-wrap justify-content-md-end">
+                        
+                        <!-- Logika 1: Tombol Reset HANYA buat Admin -->
+                        <?php if ($role === 'admin'): ?>
                         <a href="reset.php" class="btn btn-outline-danger rounded-pill px-4 py-2 hover-lift fw-medium" onclick="event.stopImmediatePropagation(); return confirm('Yakin ingin mereset semua data member?');">
                             <i class="bi bi-trash3 me-1"></i> Reset Data
                         </a>
+                        <?php endif; ?>
                         
                         <a href="#" class="btn bg-light text-secondary rounded-pill px-4 py-2 border-0 hover-lift fw-medium" onclick="document.querySelector('tbody').innerHTML = '<tr><td colspan=\'7\' class=\'text-center py-5 text-secondary\'><div class=\'spinner-border spinner-border-sm me-2\' role=\'status\'></div>Memuat data...</td></tr>'; setTimeout(() => { window.location.href = 'list.php'; }, 600); return false;">
                             <i class="bi bi-arrow-clockwise me-1"></i> Muat Ulang
                         </a>
                         
+                        <!-- Logika 2: Tombol Tambah HANYA buat Admin -->
+                        <?php if ($role === 'admin'): ?>
                         <a href="tambah.php" class="btn text-white rounded-pill px-4 py-2 hover-lift fw-medium" style="background-color: #8FA396;">
                             <i class="bi bi-person-plus-fill me-1"></i> Tambah Anggota
                         </a>
+                        <?php endif; ?>
                     </div>
 
                 </div>
@@ -57,13 +68,18 @@ $daftarMember = $pdo->query("SELECT * FROM member ORDER BY id DESC")->fetchAll(P
                                 <th class="py-3 text-uppercase" style="font-size: 0.85rem;">No. HP</th>
                                 <th class="py-3 text-uppercase" style="font-size: 0.85rem;">Email</th>
                                 <th class="py-3 text-uppercase" style="font-size: 0.85rem;">Tgl Gabung</th>
+                                
+                                <!-- Logika 3: Header Kolom Aksi disembunyikan dari Petugas -->
+                                <?php if ($role === 'admin'): ?>
                                 <th class="py-3 text-center text-uppercase" style="font-size: 0.85rem;">Aksi</th>
+                                <?php endif; ?>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($daftarMember)): ?>
                                 <tr>
-                                    <td colspan="7" class="text-center text-secondary py-4">Belum ada data member. Silakan tambah member baru.</td>
+                                    <!-- Logika Colspan dinamis menyesuaikan jumlah kolom -->
+                                    <td colspan="<?php echo $role === 'admin' ? '7' : '6'; ?>" class="text-center text-secondary py-4">Belum ada data member. Silakan tambah member baru.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($daftarMember as $member): ?>
@@ -80,12 +96,15 @@ $daftarMember = $pdo->query("SELECT * FROM member ORDER BY id DESC")->fetchAll(P
                                         <td class="py-3"><?php echo htmlspecialchars($member['no_hp']); ?></td>
                                         <td class="py-3 text-secondary"><?php echo htmlspecialchars($member['email'] ?? '-'); ?></td>
                                         <td class="py-3 text-secondary"><?php echo $tgl_tampil; ?></td>
+                                        
+                                        <!-- Logika 4: Tombol Edit & Hapus HANYA buat Admin -->
+                                        <?php if ($role === 'admin'): ?>
                                         <td class="py-3 text-center">
-                                            <button type="button" class="btn btn-edit-aes btn-sm rounded-pill px-3 mb-1 hover-lift"><i class="bi bi-pencil-square"></i></button>
-                                            
-                                            <!-- Tombol Hapus -->
+                                            <a href="edit.php?id=<?php echo $member['id']; ?>" class="btn btn-edit-aes btn-sm rounded-pill px-3 mb-1 hover-lift"><i class="bi bi-pencil-square"></i></a>
                                             <a href="hapus.php?id=<?php echo $member['id']; ?>" class="btn btn-hapus-aes btn-sm rounded-pill px-3 mb-1 hover-lift" onclick="event.stopImmediatePropagation(); return confirm('Yakin ingin menghapus \'<?php echo htmlspecialchars($member['nama']); ?>\' secara permanen?');"><i class="bi bi-trash"></i></a>
                                         </td>
+                                        <?php endif; ?>
+                                        
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>

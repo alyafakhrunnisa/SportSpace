@@ -1,0 +1,20 @@
+-- Tabel untuk menyimpan data pelanggan
+CREATE TABLE member (
+    id SERIAL PRIMARY KEY,
+    id_member VARCHAR(50) UNIQUE NOT NULL,
+    tipe VARCHAR(20) NOT NULL,
+    nama VARCHAR(100) NOT NULL,
+    no_hp VARCHAR(20) NOT NULL,
+    email VARCHAR(100),
+    tanggal_bergabung DATE NOT NULL
+);
+
+-- Tabel untuk menyimpan data fasilitas olahraga/biliar
+CREATE TABLE arena (
+    id SERIAL PRIMARY KEY,
+    id_arena VARCHAR(50) UNIQUE NOT NULL,
+    kategori VARCHAR(50) NOT NULL,
+    nama VARCHAR(100) NOT NULL,
+    harga INTEGER NOT NULL,
+    status VARCHAR(20) NOT NULL
+);

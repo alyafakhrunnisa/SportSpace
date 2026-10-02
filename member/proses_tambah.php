@@ -1,5 +1,15 @@
 <?php
-session_start();
+// Lapis 1: Pastikan user sudah login (auth.php sudah memuat session_start())
+require __DIR__ . '/../includes/auth.php';
+
+// Lapis 2: Pastikan user adalah admin
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Akses ditolak! Hanya admin yang bisa menambah data.'];
+    header('Location: list.php');
+    exit;
+}
+
+// Lapis 3: Baru panggil koneksi database jika lolos pengamanan
 require __DIR__ . '/../includes/koneksi.php';
 
 $id_member = trim($_POST['id_member'] ?? '');

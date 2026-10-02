@@ -1,11 +1,15 @@
 <?php
 session_start();
+require __DIR__ . '/../includes/auth.php';
 $page_title = "Daftar Arena";
 include __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/koneksi.php';
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
+
+// Cek role user yang lagi login (default: petugas)
+$role = $_SESSION['role'] ?? 'petugas';
 
 // Membaca data langsung dari tabel database PostgreSQL
 $daftarArena = $pdo->query("SELECT * FROM arena ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
@@ -29,17 +33,24 @@ $daftarArena = $pdo->query("SELECT * FROM arena ORDER BY id DESC")->fetchAll(PDO
                     <input type="text" id="search-input" class="form-control rounded-pill bg-light border-0 shadow-none py-2" style="padding-left: 48px;" placeholder="Cari arena...">
                 </div>
                 <div class="d-flex gap-2 flex-wrap justify-content-md-end">
+                    
+                    <!-- Logika 1: Tombol Reset HANYA buat Admin -->
+                    <?php if ($role === 'admin'): ?>
                     <a href="reset.php" class="btn btn-outline-danger rounded-pill px-4 py-2 hover-lift fw-medium" onclick="event.stopImmediatePropagation(); return confirm('Yakin ingin mereset semua data arena?');">
                         <i class="bi bi-trash3 me-1"></i> Reset Data
                     </a>
+                    <?php endif; ?>
 
-                    <a href="#" class="btn bg-light text-secondary rounded-pill px-4 py-2 border-0 hover-lift fw-medium" onclick="document.querySelector('tbody').innerHTML = '<tr><td colspan=\'6\' class=\'text-center py-5 text-secondary\'><div class=\'spinner-border spinner-border-sm me-2\' role=\'status\'></div>Memuat data...</td></tr>'; setTimeout(() => { window.location.href = 'list.php'; }, 600); return false;">
+                    <a href="#" class="btn bg-light text-secondary rounded-pill px-4 py-2 border-0 hover-lift fw-medium" onclick="document.querySelector('tbody').innerHTML = '<tr><td colspan=\'<?php echo $role === 'admin' ? '6' : '5'; ?>\' class=\'text-center py-5 text-secondary\'><div class=\'spinner-border spinner-border-sm me-2\' role=\'status\'></div>Memuat data...</td></tr>'; setTimeout(() => { window.location.href = 'list.php'; }, 600); return false;">
                         <i class="bi bi-arrow-clockwise me-1"></i> Muat Ulang
                     </a>
 
+                    <!-- Logika 2: Tombol Tambah HANYA buat Admin -->
+                    <?php if ($role === 'admin'): ?>
                     <a href="tambah.php" class="btn text-white rounded-pill px-4 py-2 hover-lift fw-medium" style="background-color: #8FA396;">
                         <i class="bi bi-plus-lg me-1"></i> Tambah Arena
                     </a>
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -53,13 +64,18 @@ $daftarArena = $pdo->query("SELECT * FROM arena ORDER BY id DESC")->fetchAll(PDO
                             <th class="py-3 text-uppercase" style="font-size: 0.85rem;">Kategori</th>
                             <th class="py-3 text-uppercase" style="font-size: 0.85rem;">Harga / Jam</th>
                             <th class="py-3 text-center text-uppercase" style="font-size: 0.85rem;">Status</th>
+                            
+                            <!-- Logika 3: Header Kolom Aksi disembunyikan dari Petugas -->
+                            <?php if ($role === 'admin'): ?>
                             <th class="py-3 text-center text-uppercase" style="font-size: 0.85rem;">Aksi</th>
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($daftarArena)): ?>
                             <tr>
-                                <td colspan="6" class="text-center text-secondary py-4">Belum ada data arena di database.</td>
+                                <!-- Logika Colspan dinamis menyesuaikan jumlah kolom -->
+                                <td colspan="<?php echo $role === 'admin' ? '6' : '5'; ?>" class="text-center text-secondary py-4">Belum ada data arena di database.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($daftarArena as $arena): ?>
@@ -74,12 +90,17 @@ $daftarArena = $pdo->query("SELECT * FROM arena ORDER BY id DESC")->fetchAll(PDO
                                     <td class="py-3 text-secondary"><?php echo htmlspecialchars($arena['kategori']); ?></td>
                                     <td class="py-3 fw-medium">Rp <?php echo number_format($arena['harga'], 0, ',', '.'); ?>/jam</td>
                                     <td class="py-3 text-center"><?php echo $badgeStatus; ?></td>
+                                    
+                                    <!-- Logika 4: Tombol Edit & Hapus HANYA buat Admin -->
+                                    <?php if ($role === 'admin'): ?>
                                     <td class="py-3 text-center">
-                                        <button type="button" class="btn btn-edit-aes btn-sm rounded-pill px-3 mb-1"><i class="bi bi-pencil-square"></i></button>
-                                        
-                                        
-                                        <a href="hapus.php?id=<?php echo $arena['id']; ?>" class="btn btn-hapus-aes btn-sm rounded-pill px-3 mb-1 hover-lift" onclick="event.stopImmediatePropagation(); return confirm('Yakin ingin menghapus arena \'<?php echo htmlspecialchars($arena['nama']); ?>\' secara permanen?');"><i class="bi bi-trash"></i></a>
+                                        <!-- Tombol Edit -->
+                                        <a href="edit.php?id=<?php echo $arena['id']; ?>" class="btn btn-edit-aes btn-sm rounded-pill px-3 mb-1 hover-lift"><i class="bi bi-pencil-square"></i></a>
+
+                                        <!-- Tombol Hapus -->
+                                        <a href="hapus.php?id=<?php echo $arena['id']; ?>" class="btn btn-hapus-aes btn-sm rounded-pill px-3 mb-1 hover-lift" onclick="event.stopImmediatePropagation(); return confirm('Yakin ingin menghapus arena ini secara permanen?');"><i class="bi bi-trash"></i></a>
                                     </td>
+                                    <?php endif; ?>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>

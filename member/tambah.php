@@ -1,5 +1,13 @@
 <?php
 session_start();
+require __DIR__ . '/../includes/auth.php';
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['flash'] = ['type' => 'error', 'pesan' => 'Akses ditolak! Hanya admin yang bisa mengelola data.'];
+    header('Location: list.php');
+    exit;
+}
+
 $page_title = "Tambah Member";
 include __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/koneksi.php';
